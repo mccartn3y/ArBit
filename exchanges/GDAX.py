@@ -35,8 +35,8 @@ class CoinbaseManager():
         r = requests.get(api_url + '/products/ETH-EUR/book?level=1', auth=self.auth)
         ask = r.json()['asks'][0][0]
         bid = r.json()['bids'][0][0]
-        return [ask, bid]
-
+        return {'ask': ask, 'bid': bid}
+    
     def get_products(self):
         api_url = 'https://api.gdax.com/'
         r = requests.get(api_url + '/products', auth=self.auth)

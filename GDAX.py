@@ -36,3 +36,10 @@ class CoinbaseManager():
         ask = r.json()['asks'][0][0]
         bid = r.json()['bids'][0][0]
         return [ask, bid]
+
+    def get_products(self):
+        api_url = 'https://api.gdax.com/'
+        r = requests.get(api_url + '/products', auth=self.auth)
+        resp = [x['id'] for x in r.json()]
+        print(resp)
+        return r.json()[0]['id']

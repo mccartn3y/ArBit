@@ -1,4 +1,5 @@
 import json, hmac, hashlib, time, requests, base64
+import pandas as pd
 from requests.auth import AuthBase
 
 # Create custom authentication for Exchange
@@ -24,38 +25,27 @@ class CoinbaseExchangeAuth(AuthBase):
         })
         return request
 
-class PriceManager():
+class AskAndBidGetter():
+
 
     def __init__(self):
         pass
 
-    def get_coinbase_prices(self):
-        api_url = 'https://api.gdax.com/products/ETH-EUR/ticker'
-        r = requests.get(api_url)
-        ask = r.json()['ask']
-        bid = r.json()['bid']
-        return {'ask': ask, 'bid': bid}
+    def get_ask_and_bid_prices(self):
 
-    def get_bitstamp_prices(self):
-        api_url = 'https://www.bitstamp.net/api/v2/ticker/etheur/'
-        r = requests.get(api_url)
-        ask = r.json()['ask']
-        bid = r.json()['bid']
-        return {'ask': ask, 'bid': bid}
+        api_urls = {'GDAX': 'https://api.gdax.com/products/ETH-EUR/ticker',
+            'BitStamp': 'https://www.bitstamp.net/api/v2/ticker/etheur/',
+            'cex.io': 'https://cex.io/api/ticker/ETH/EUR',
+            'Bitbay': 'https://bitbay.net/API/Public/ETHEUR/ticker.json'}
 
-    def get_cex_prices(self):
-        api_url = 'https://cex.io/api/ticker/ETH/EUR'
-        r = requests.get(api_url)
-        ask = r.json()['ask']
-        bid = r.json()['bid']
-        return {'ask': ask, 'bid': bid}
+        df = pd.read_csv('../exchanges.csv', index_col=0)
 
-    def get_bitbay_prices(self):
-        api_url = 'https://bitbay.net/API/Public/ETHEUR/ticker.json'
-        r = requests.get(api_url)
-        ask = r.json()['ask']
-        bid = r.json()['bid']
-        return {'ask': ask, 'bid': bid}
+        for exchange, api_url in api_urls.items():
+            r = requests.get(api_url)
+            df.loc[exchange, 'Ask'] = r.json()['ask']
+            df.loc[exchange, 'Bid'] = r.json()['bid']
+
+        return df
 
 # Unused - for reference only
 class PriceManagerReference():

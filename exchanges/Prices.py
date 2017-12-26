@@ -24,20 +24,47 @@ class CoinbaseExchangeAuth(AuthBase):
         })
         return request
 
-class CoinbaseManager():
+class PriceManager():
+
+    def __init__(self):
+        pass
+
+    def get_coinbase_prices(self):
+        api_url = 'https://api.gdax.com/'
+        r = requests.get(api_url + '/products/ETH-EUR/ticker')
+        ask = r.json()['ask']
+        bid = r.json()['bid']
+        return {'ask': ask, 'bid': bid}
+
+    def get_bitstamp_prices(self):
+        api_url = 'https://www.bitstamp.net/api/v2/ticker/etheur/'
+        r = requests.get(api_url)
+        ask = r.json()['ask']
+        bid = r.json()['bid']
+        return {'ask': ask, 'bid': bid}
+
+    def get_cex_prices(self):
+        api_url = 'https://cex.io/api/ticker/ETH/EUR'
+        r = requests.get(api_url)
+        ask = r.json()['ask']
+        bid = r.json()['bid']
+        return {'ask': ask, 'bid': bid}
+
+# Unused - for reference only
+class PriceManagerReference():
     
     def __init__(self, api_key, api_secret, api_pass):
              
         self.auth = CoinbaseExchangeAuth(api_key, api_secret, api_pass)
 
-    def get_prices(self):
+    def get_coinbase_prices(self, api_key, api_secret, api_pass):
         api_url = 'https://api.gdax.com/'
         r = requests.get(api_url + '/products/ETH-EUR/book?level=1', auth=self.auth)
         ask = r.json()['asks'][0][0]
         bid = r.json()['bids'][0][0]
         return {'ask': ask, 'bid': bid}
     
-    def get_products(self):
+    def get_coinbase_products(self):
         api_url = 'https://api.gdax.com/'
         r = requests.get(api_url + '/products', auth=self.auth)
         resp = [x['id'] for x in r.json()]

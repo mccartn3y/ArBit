@@ -47,7 +47,7 @@ class AskAndBidGetter():
                 df.loc[exchange, 'Ask'] = r.json()['result']['XETHZEUR']['a'][0]
                 df.loc[exchange, 'Bid'] = r.json()['result']['XETHZEUR']['b'][0]
 
-        df.to_csv('../exchanges.csv')
+        df.to_csv('../exchanges.csv', encoding='utf-8')
 
 # Unused - for reference only
 class PriceManagerReference():

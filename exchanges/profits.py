@@ -29,6 +29,7 @@ class opp_finder():
             
         #Pivot results
         self.profits = df.pivot(columns='Out Ex', values='ETH->EUR')
+        print(self.profits)
         
     def plot_profits(self):
         sns.heatmap(self.profits)

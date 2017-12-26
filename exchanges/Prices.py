@@ -30,8 +30,8 @@ class PriceManager():
         pass
 
     def get_coinbase_prices(self):
-        api_url = 'https://api.gdax.com/'
-        r = requests.get(api_url + '/products/ETH-EUR/ticker')
+        api_url = 'https://api.gdax.com/products/ETH-EUR/ticker'
+        r = requests.get(api_url)
         ask = r.json()['ask']
         bid = r.json()['bid']
         return {'ask': ask, 'bid': bid}
@@ -45,6 +45,13 @@ class PriceManager():
 
     def get_cex_prices(self):
         api_url = 'https://cex.io/api/ticker/ETH/EUR'
+        r = requests.get(api_url)
+        ask = r.json()['ask']
+        bid = r.json()['bid']
+        return {'ask': ask, 'bid': bid}
+
+    def get_bitbay_prices(self):
+        api_url = 'https://bitbay.net/API/Public/ETHEUR/ticker.json'
         r = requests.get(api_url)
         ask = r.json()['ask']
         bid = r.json()['bid']

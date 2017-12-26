@@ -27,25 +27,27 @@ class CoinbaseExchangeAuth(AuthBase):
 
 class AskAndBidGetter():
 
-
-    def __init__(self):
-        pass
-
     def get_ask_and_bid_prices(self):
 
         api_urls = {'GDAX': 'https://api.gdax.com/products/ETH-EUR/ticker',
             'BitStamp': 'https://www.bitstamp.net/api/v2/ticker/etheur/',
             'cex.io': 'https://cex.io/api/ticker/ETH/EUR',
-            'Bitbay': 'https://bitbay.net/API/Public/ETHEUR/ticker.json'}
+            'Bitbay': 'https://bitbay.net/API/Public/ETHEUR/ticker.json',
+            'Kraken': 'https://api.kraken.com/0/public/Ticker?pair=ETHEUR'}
 
         df = pd.read_csv('../exchanges.csv', index_col=0)
 
         for exchange, api_url in api_urls.items():
-            r = requests.get(api_url)
-            df.loc[exchange, 'Ask'] = r.json()['ask']
-            df.loc[exchange, 'Bid'] = r.json()['bid']
+            if exchange != 'Kraken':
+                r = requests.get(api_url)
+                df.loc[exchange, 'Ask'] = r.json()['ask']
+                df.loc[exchange, 'Bid'] = r.json()['bid']
+            else:
+                r = requests.get(api_url)
+                df.loc[exchange, 'Ask'] = r.json()['result']['XETHZEUR']['a'][0]
+                df.loc[exchange, 'Bid'] = r.json()['result']['XETHZEUR']['b'][0]
 
-        return df
+        df.to_csv('../exchanges.csv')
 
 # Unused - for reference only
 class PriceManagerReference():

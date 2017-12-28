@@ -1,4 +1,4 @@
-import json, hmac, hashlib, time, requests, base64
+import hmac, hashlib, time, requests, base64
 import pandas as pd
 from requests.auth import AuthBase
 
@@ -56,7 +56,7 @@ class PriceManagerReference():
              
         self.auth = CoinbaseExchangeAuth(api_key, api_secret, api_pass)
 
-    def get_coinbase_prices(self, api_key, api_secret, api_pass):
+    def get_coinbase_prices(self):
         api_url = 'https://api.gdax.com/'
         r = requests.get(api_url + '/products/ETH-EUR/book?level=1', auth=self.auth)
         ask = r.json()['asks'][0][0]

@@ -26,11 +26,31 @@ class CoinbaseExchangeAuth(AuthBase):
 
 api_url = 'https://api.gdax.com/'
 
+class GetCredentialsFromFile():
+
+    def __init__(self, filename):
+        with open(filename) as f:
+            for line in f:
+                if "Key:" in line:
+                    self.key = line.replace("Key:", "").strip()
+                if "Secret:" in line:
+                    self.secret = line.replace("Secret:", "").strip()
+                if "Passphrase:" in line:
+                    self.passphrase = line.replace("Passphrase:", "").strip()
+        f.close()
+
 class PlaceLimitOrder():
     
-    def __init__(self, api_key, api_secret, api_pass):
+    def __init__(self, filename, size, price, side):
+        
+        api_key = GetCredentialsFromFile(filename).key
+        api_secret = GetCredentialsFromFile(filename).secret
+        api_pass = GetCredentialsFromFile(filename).passphrase
              
         self.auth = CoinbaseExchangeAuth(api_key, api_secret, api_pass)
+        self.size = size
+        self.price = price
+        self.side = side
 
     def post_limit_order(self):
         order = '{"size": "0.01", "price": "0.100", "side": "buy", "product_id": "ETH-EUR"}'

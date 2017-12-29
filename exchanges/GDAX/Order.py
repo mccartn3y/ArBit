@@ -48,12 +48,11 @@ class PlaceLimitOrder():
         api_pass = GetCredentialsFromFile(filename).passphrase
              
         self.auth = CoinbaseExchangeAuth(api_key, api_secret, api_pass)
-        self.size = size
-        self.price = price
-        self.side = side
+        self.size = str(size)
+        self.price = str(price)
+        self.side = str(side)
 
     def post_limit_order(self):
-        order = '{"size": "0.01", "price": "0.100", "side": "buy", "product_id": "ETH-EUR"}'
+        order = '{{"size": "{0}", "price": "{1}", "side": "{2}", "product_id": "ETH-EUR"}}'.format(self.size, self.price, self.side)
         response = requests.post(api_url + 'orders', data=order, auth=self.auth)
-        print(response)
         return response

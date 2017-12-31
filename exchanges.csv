@@ -1,8 +1,8 @@
 Exchange,Location,Pay in,Pay out,Transaction,API,Public API Key,URL,Comments,Ask,Bid
-GDAX,USA,0,0.15,0.0,1,,www.gdax.com,,643.34,643.33
-BitStamp,SVN,0,0.9,0.0025,1,,www.bitstamp.net,,606.99,604.09
-Kraken,USA,0,0.09,0.0016,1,,www.kraken.com,,607.52000,605.74000
-cex.io,GBR,0,3.5,0.0016,1,,www.cex.io,"Deposit SEPA, withdraw via VISA",651.04,650.5632
-Bitbay,POL,0,1.5,0.003,1,,www.bitbay.net,,655,648
+GDAX,USA,0,0.15,0.0,1,,www.gdax.com,,641.01,641
+BitStamp,SVN,0,0.9,0.0025,1,,www.bitstamp.net,,624.94,624.32
+Kraken,USA,0,0.09,0.0016,1,,www.kraken.com,,622.35000,620.54000
+cex.io,GBR,0,3.5,0.0016,1,,www.cex.io,"Deposit SEPA, withdraw via VISA",665.9931,663.0068
+Bitbay,POL,0,1.5,0.003,1,,www.bitbay.net,,659.98,649.52
 Poloniex,USA,0,0.0,0.0025,1,,www.poloniex.com,,,
 Coinmama,SVK,0,,0.0,1,,www.coinmama.com,EUR->crypto only,,

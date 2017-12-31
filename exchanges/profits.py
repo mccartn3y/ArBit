@@ -2,7 +2,13 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from Prices import AskAndBidGetter as aab 
+import os
+import sys
+
+file_dir = os.path.dirname(__file__)
+sys.path.append(file_dir)
+from Prices import AskAndBidGetter as aab
+import datetime
 
 class opp_finder():
     def __init__(self):
@@ -12,11 +18,13 @@ class opp_finder():
             a.get_ask_and_bid_prices()
         except Exception as ex:
             print(str(type(ex))+": Exchange database not updated")
+        time = datetime.datetime.now().isoformat()
         #import data from exchanges and copy 
         self.exs = pd.read_csv('../exchanges.csv', index_col=0)
         df = self.exs[['Pay in', 'Pay out', 'Transaction']]
         df['Bid'] = pd.to_numeric(self.exs.Bid, errors='coerce')
         df['Ask'] = pd.to_numeric(self.exs.Ask, errors='coerce')
+        df['Date'] = time
         
         #Calculate ETH from 100 EUR
         df['100EUR->ETH'] = ((5 - df['Pay in'] ) * (1-df['Transaction'])) / (df['Ask']-0.01)
@@ -34,6 +42,8 @@ class opp_finder():
                                    -temp_df.loc[ex, 'Pay out'])-5
             #print(temp_df[['100EUR->ETH', 'Out Ex', 'ETH->EUR']])
             df = df.append(temp_df)
+
+        self.df = df
             
         #Pivot results
         self.profits = df.pivot(columns='Out Ex', values='ETH->EUR')
@@ -43,5 +53,12 @@ class opp_finder():
         sns.heatmap(self.profits)
         plt.show()
 
+    def df_to_SQL(self, connection):
+        self.df.to_sql("ArBit_history", connection, index_label='In Ex')
+
+    def top_trades(self, n):
+        temp = self.df.sort_values('ETH->EUR', ascending=False)
+        return temp.iloc[:n, :]
+
 opp = opp_finder()
-opp.plot_profits()
+print(opp.top_trades(5))

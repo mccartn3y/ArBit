@@ -1,2 +1,7 @@
 __pycache__/
 exchanges/GDAX/GDAX_All.txt
+.idea/workspace.xml
+.idea/ArBit.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml

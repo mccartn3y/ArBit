@@ -27,27 +27,34 @@ class CoinbaseExchangeAuth(AuthBase):
 
 class AskAndBidGetter():
 
-    def get_ask_and_bid_prices(self):
+    def get_all_eur_eth_prices(self):
+
+        # api_urls = {'GDAX': 'https://api.gdax.com/products/ETH-EUR/ticker',
+        #     'BitStamp': 'https://www.bitstamp.net/api/v2/ticker/etheur/',
+        #     'cex.io': 'https://cex.io/api/ticker/ETH/EUR',
+        #     'Bitbay': 'https://bitbay.net/API/Public/ETHEUR/ticker.json',
+        #     'Kraken': 'https://api.kraken.com/0/public/Ticker?pair=ETHEUR'}
 
         api_urls = {'GDAX': 'https://api.gdax.com/products/ETH-EUR/ticker',
-            'BitStamp': 'https://www.bitstamp.net/api/v2/ticker/etheur/',
-            'cex.io': 'https://cex.io/api/ticker/ETH/EUR',
-            'Bitbay': 'https://bitbay.net/API/Public/ETHEUR/ticker.json',
-            'Kraken': 'https://api.kraken.com/0/public/Ticker?pair=ETHEUR'}
+            'BitStamp': 'https://www.bitstamp.net/api/v2/ticker/etheur/'}
 
         df = pd.read_csv('../exchanges.csv', index_col=0)
 
         for exchange, api_url in api_urls.items():
-            if exchange != 'Kraken':
-                r = requests.get(api_url)
-                df.loc[exchange, 'Ask'] = r.json()['ask']
-                df.loc[exchange, 'Bid'] = r.json()['bid']
+            r = requests.get(api_url)
+            if r.status_code == 200:
+                if exchange != 'Kraken':
+                    df.loc[exchange, 'Ask'] = r.json()['ask']
+                    df.loc[exchange, 'Bid'] = r.json()['bid']
+                else:
+                    df.loc[exchange, 'Ask'] = r.json()['result']['XETHZEUR']['a'][0]
+                    df.loc[exchange, 'Bid'] = r.json()['result']['XETHZEUR']['b'][0]
             else:
-                r = requests.get(api_url)
-                df.loc[exchange, 'Ask'] = r.json()['result']['XETHZEUR']['a'][0]
-                df.loc[exchange, 'Bid'] = r.json()['result']['XETHZEUR']['b'][0]
+                print('Exchange {0} responded with a {1} code'.format(exchange, r.status_code))
+                return 1
 
         df.to_csv('../exchanges.csv', encoding='utf-8')
+        return 0
 
 # Unused - for reference only
 class PriceManagerReference():

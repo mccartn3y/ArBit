@@ -1,6 +1,8 @@
 import json, hmac, hashlib, time, requests, base64
 from requests.auth import AuthBase
 
+api_url = 'https://api.gdax.com/'
+
 # Create custom authentication for Exchange
 class CoinbaseExchangeAuth(AuthBase):
     def __init__(self, api_key, secret_key, passphrase):
@@ -24,8 +26,6 @@ class CoinbaseExchangeAuth(AuthBase):
         })
         return request
 
-api_url = 'https://api.gdax.com/'
-
 class GetCredentialsFromFile():
 
     def __init__(self, filename):
@@ -39,20 +39,38 @@ class GetCredentialsFromFile():
                     self.passphrase = line.replace("Passphrase:", "").strip()
         f.close()
 
-class PlaceLimitOrder():
-    
-    def __init__(self, filename, size, price, side):
+class GDAXOrderManager():
+
+    def __init__(self, filename):
         
         api_key = GetCredentialsFromFile(filename).key
         api_secret = GetCredentialsFromFile(filename).secret
         api_pass = GetCredentialsFromFile(filename).passphrase
              
         self.auth = CoinbaseExchangeAuth(api_key, api_secret, api_pass)
-        self.size = str(size)
-        self.price = str(price)
-        self.side = str(side)
 
-    def post_limit_order(self):
-        order = '{{"size": "{0}", "price": "{1}", "side": "{2}", "product_id": "ETH-EUR"}}'.format(self.size, self.price, self.side)
+    def post_eth_eur_limit_order(self, size, price, side):
+        order = '{{"size": "{0}", "price": "{1}", "side": "{2}", "product_id": "ETH-EUR"}}'.format(str(size), str(price), str(side))
         response = requests.post(api_url + 'orders', data=order, auth=self.auth)
         return response
+
+    def retrieve_eth_eur_limit_orders_by_id(self, id):
+        response = requests.get(api_url + 'orders/' + id, auth=self.auth)
+        return response
+
+    def cancel_eth_eur_limit_orders_by_id(self, id):
+        response = requests.delete(api_url + 'orders/' + id, auth=self.auth)
+        return response
+
+    def list_all_eth_eur_orders(self):
+        orders = requests.get(api_url + 'orders', auth=self.auth)
+        if orders.status_code == requests.codes.ok:
+            eth_eur_orders = []
+            for order in orders.json():
+                if order['id'] == 'ETH-EUR':
+                    eth_eur_orders.append(order)
+            return json.dumps(eth_eur_orders)
+        else:
+            print(orders.raise_for_status())
+            return -1
+

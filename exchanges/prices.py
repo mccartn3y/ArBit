@@ -42,7 +42,7 @@ class AskAndBidGetter():
 
         for exchange, api_url in api_urls.items():
             r = requests.get(api_url)
-            if r.status_code == 200:
+            if r.status_code == requests.codes.ok:
                 if exchange != 'Kraken':
                     df.loc[exchange, 'Ask'] = r.json()['ask']
                     df.loc[exchange, 'Bid'] = r.json()['bid']
@@ -50,7 +50,7 @@ class AskAndBidGetter():
                     df.loc[exchange, 'Ask'] = r.json()['result']['XETHZEUR']['a'][0]
                     df.loc[exchange, 'Bid'] = r.json()['result']['XETHZEUR']['b'][0]
             else:
-                print('Exchange {0} responded with a {1} code'.format(exchange, r.status_code))
+                print(r.raise_for_status())
                 return 1
 
         df.to_csv('../exchanges.csv', encoding='utf-8')
@@ -59,19 +59,26 @@ class AskAndBidGetter():
 # Unused - for reference only
 class PriceManagerReference():
     
-    def __init__(self, api_key, api_secret, api_pass):
-             
-        self.auth = CoinbaseExchangeAuth(api_key, api_secret, api_pass)
+    def __init__(self):
+        pass
 
     def get_coinbase_prices(self):
         api_url = 'https://api.gdax.com/'
-        r = requests.get(api_url + '/products/ETH-EUR/book?level=1', auth=self.auth)
+        r = requests.get(api_url + '/products/ETH-EUR/book?level=1')
         ask = r.json()['asks'][0][0]
         bid = r.json()['bids'][0][0]
         return {'ask': ask, 'bid': bid}
     
     def get_coinbase_products(self):
         api_url = 'https://api.gdax.com/'
-        r = requests.get(api_url + '/products', auth=self.auth)
+        r = requests.get(api_url + '/products')
         resp = [x['id'] for x in r.json()]
         return resp
+
+    def get_coinbase_products_raw(self):
+        api_url = 'https://api.gdax.com/'
+        r = requests.get(api_url + '/products').json()
+        for product in r:
+            if product['id'] == 'ETH-EUR':
+                print(product)
+        return r
